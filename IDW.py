@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
 
 import pandas as pd
 import numpy as np
@@ -13,32 +11,22 @@ location = pd.read_csv("Downloads/sensor_locations.csv", usecols=[1,2])
 loc_arr = location.to_numpy()
 #print(loc_arr)
 
-
-# In[2]:
-
-
 cols=[]
 for i in range(1,57):
     cols.append(i*6)
 all_m = pd.read_csv("Downloads/march-2017.csv", usecols=cols)
 #print(all_m)
 
-
-# In[3]:
-
-
 pm10 = all_m.to_numpy()
-
-
-# In[4]:
-
 
 #odległość liczona przy założeniu, że Ziemia jest kulą
 def distance(x1, x2, y1, y2):
     return np.sqrt((x2-x1)**2+(np.cos(x1*np.pi/180)*(y2-y1)**2))*40075.704/360 #km
+
 #funkcja wagowa 
 def weight(x, xk, y, yk, p):
     return 1/distance(xk, x, yk, y)**p
+
 #interpolacja IDW
 def IDW(x, y, loc_arr, pm10, date, p):
     sum_wz = 0
@@ -52,6 +40,7 @@ def IDW(x, y, loc_arr, pm10, date, p):
             sum_w+=0
     z = sum_wz/sum_w
     return z #zwraca wartość w punkcie (x,y)
+
 # parametry określające jakośc interpolacji (MPE i RMSE)
 def quality(z,pm10):
     s=0
@@ -78,10 +67,6 @@ for p in k:
             z[i,j] = IDW(loc_arr[j,0],loc_arr[j,1],loc_arr,pm10,i,p)
     tab.append(quality(z,pm10))
 print(tab)
-
-
-# In[6]:
-
 
 mpe = []
 rmse = []
